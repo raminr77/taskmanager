@@ -64,6 +64,9 @@ This will:
 | POST   | /api/tasks         | Create a new task         |
 | PUT    | /api/tasks/{id}    | Update an existing task   |
 | DELETE | /api/tasks/{id}    | Delete a task             |
+| POST   | /api/auth/login    | Login                     |
+| POST   | /api/auth/register | Register                  |
+| POST   | /api/auth/refresh  | Refresh Token             |
 
 ## 📄 Environment Profiles
 
