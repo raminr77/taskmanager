@@ -32,3 +32,5 @@ spring:
 jwt:
   secret: 'jwt-secret-code'
   expiration: 3600000
+cors:
+  allowed-origin-urls: http://127.0.0.1,http://localhost

@@ -32,7 +32,7 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(
             @CookieValue("refreshToken") String refreshToken,
-            @CookieValue("email") String email,
+            @RequestBody String email,
             HttpServletResponse response
     ) {
         var tokens = authService.refreshToken(email, refreshToken);

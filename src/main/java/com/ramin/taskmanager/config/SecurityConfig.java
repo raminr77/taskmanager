@@ -1,17 +1,19 @@
 package com.ramin.taskmanager.config;
 
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.Customizer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -22,18 +24,18 @@ public class SecurityConfig {
             org.springframework.security.config.annotation.web.builders.HttpSecurity http
     ) throws Exception {
         http
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                antMatcher("/api/auth/**"),
-                                antMatcher("/h2-console/**")
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
                 .httpBasic(Customizer.withDefaults())
-                .headers(
-                        headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .authorizeHttpRequests(request ->
+                        request
+                                .requestMatchers(HttpMethod.PUT, "/api/tasks/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/tasks/**").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/tasks/**").authenticated()
+                                .anyRequest().permitAll()
                 );
 
         return http.build();
